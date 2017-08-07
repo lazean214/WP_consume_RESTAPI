@@ -6,18 +6,19 @@ HOW TO USE
 
 
 # INPUTS
+'''
 API TOKEN: YOURAPITOKENHERE
 end_point_1: https://yourdomain/api/endpoint1/
 end_point_2: https://yourdomain/api/endpoint1/
 end_point_3: https://yourdomain/api/endpoint1/
 end_point_4: https://yourdomain/api/endpoint1/
 end_point_5: https://yourdomain/api/endpoint1/
-
+'''
 # SAMPLE
- $data = consumeRestAPI('parameter', end_point_1);
+> $data = consumeRestAPI('parameter', end_point_1);
  
 # cURL
-
+'''
 $authorization = "Authorization: Bearer YOURAPITOKENHERE";
 $url = 'https://yourdomain/api/endpoint1/' .$parameter;
 $cURL = curl_init();
@@ -33,7 +34,7 @@ $result = curl_exec($cURL);
 curl_close($cURL);
 $json = json_decode($result);
 return $json;
-
+'''
 Feel free to modify the code as you seem fit.
  
  
