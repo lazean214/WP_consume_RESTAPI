@@ -29,6 +29,18 @@ function consume_rest_api_install(){
 	add_option("end_point_4", 'endpoint', '', 'yes');
 	add_option("end_point_5", 'endpoint', '', 'yes');
 	flush_rewrite_rules();
+
+	//Create New Page
+	$post = array(
+		'post_title' => wp_strip_all_tags('Auto Page'),
+		'post_content' => 'A Lorem Ipsum egy egyszerû szövegrészlete, szövegutánzata a betûszedõ és nyomdaiparnak. A Lorem Ipsum az 1500-as évek óta standard szövegrészletként szolgált az iparban; mikor egy ismeretlen nyomdász összeállította a betûkészletét és egy példa-könyvet vagy szöveget nyomott papírra, ezt használta. Nem csak 5 évszázadot élt túl, de az elektronikus betûkészleteknél is változatlanul megmaradt. Az 1960-as években népszerûsítették a Lorem Ipsum részleteket magukbafoglaló Letraset lapokkal, és legutóbb softwarekkel mint például az Aldus Pagemaker. 
+',
+		'post_status' => 'publish',
+		'post_author' => 1,
+		'post_type' => 'page',
+		'post_name' => 'auto',
+	);
+	wp_insert_post( $post );
 }
 
 function consume_rest_api_remove(){
@@ -100,12 +112,12 @@ function rest_api_admin_menu_page(){ ?>
 			</td>
 		</tr>
 	</table>
-	
+
 </blockquote>
 <?php }
 
 function consumeRestAPI($type ,$endpoint){
-	 
+
 	$authorization = "Authorization: Bearer " .get_option('api_token');
 
 	//$url = 'http://laravelapi.dev/api/data/' .$type;
@@ -125,56 +137,16 @@ function consumeRestAPI($type ,$endpoint){
 	return $json;
 }
 
+
 /*
-*	VIRTUAL PAGES
+*	Template
 */
-
-function vp_qry_vars($vars)
+add_filter( 'page_template', 'wpapi_template' );
+function wpapi_template( $page_template )
 {
-	$vars[] = 'virtualpage';
-	return $vars;
+	if ( is_page( 'auto' ) ) {
+		$page_template = dirname( __FILE__ ) . '/api-template.php';
+	}
+	return $page_template;
 }
-add_filter('query_vars', 'vp_qry_vars');
-
-function vp_add_rewrite_rules() {
-  add_rewrite_tag('%virtualpage%', '([^&]+)');
-  add_rewrite_rule(
-    'test/?$',
-    'index.php?test',
-    'top'
-  );
-}
-add_action('init', 'vp_add_rewrite_rules');
-
-
-function vp_template_include($template) {
-  global $wp_query;
-  $new_template = '';
- 
-  if (array_key_exists('virtualpage', $wp_query->query_vars)) {
-    switch ($wp_query->query_vars['virtualpage']) {
-      case 'tests':
-        // We expect to find virtualpage-interesting-things.php in the 
-        // currently active theme.
-        $new_template = locate_template(array(
-          'vp-page.php'
-        ));
-        break;
-    }
- 
-    if ($new_template != '') {
-      return $new_template;
-    } else {
-      // This is not a valid virtualpage value, so set the header and template
-      // for a 404 page.
-      $wp_query->set_404();
-      status_header(404);
-      return get_404_template();
-    }
-  }
- 
-  return $template;
-}
-add_filter('template_include', 'vp_template_include');	
-
 ?>
